@@ -4,28 +4,23 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from models import db, Hero, Power, HeroPower
 
-# Set up the base directory and database configuration
+#database configuration
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
-# Initialize the Flask application
+# Initialize Flask 
 app = Flask(__name__)
 
-# Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Optional: Disable JSON compacting for more readable output (useful in development)
 app.json.compact = False
 
-# Initialize the database and migration tools
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Initialize Flask-RESTful API
 api = Api(app)
 
-# Root route for testing the API
 @app.route('/')
 def index():
     """
@@ -33,7 +28,6 @@ def index():
     """
     return '<h1>Code Challenge - API is Running</h1>'
 
-# Error handling route for invalid endpoints
 @app.errorhandler(404)
 def not_found(error):
     """
@@ -49,7 +43,6 @@ def internal_error(error):
     """
     return jsonify({"error": "An unexpected error occurred"}), 500
 
-# Sample Resource for managing Heroes (you can expand this)
 class HeroResource(Resource):
     def get(self, hero_id=None):
         """
@@ -79,7 +72,6 @@ class HeroResource(Resource):
         except Exception as e:
             return jsonify({"error": str(e)}), 400
 
-# Sample Resource for managing Powers (you can expand this)
 class PowerResource(Resource):
     def get(self, power_id=None):
         """
@@ -108,10 +100,8 @@ class PowerResource(Resource):
         except Exception as e:
             return jsonify({"error": str(e)}), 400
 
-# Adding routes to Flask-RESTful API
 api.add_resource(HeroResource, '/heroes', '/heroes/<int:hero_id>')
 api.add_resource(PowerResource, '/powers', '/powers/<int:power_id>')
 
-# Entry point of the application
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

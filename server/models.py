@@ -18,13 +18,10 @@ class Hero(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     super_name = db.Column(db.String, nullable=False)
 
-    # Relationship: Hero has many HeroPowers
     hero_powers = db.relationship('HeroPower', back_populates='hero', cascade="all, delete-orphan")
 
-    # Association proxy to access powers through HeroPower
     powers = association_proxy('hero_powers', 'power')
 
-    # Serialization: Only serialize specific fields
     serialize_rules = ('-hero_powers.hero', '-powers.hero_powers')
 
     def __repr__(self):
@@ -71,10 +68,8 @@ class HeroPower(db.Model, SerializerMixin):
     hero = db.relationship('Hero', back_populates='hero_powers')
     power = db.relationship('Power', back_populates='hero_powers')
 
-    # Serialization: Avoid recursive serialization of relationships
     serialize_rules = ('-hero.hero_powers', '-power.hero_powers')
 
-    # Validation: Ensure strength is valid
     @validates('strength')
     def validate_strength(self, key, value):
         if value not in ['Strong', 'Average', 'Weak']:
